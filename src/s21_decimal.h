@@ -2,13 +2,13 @@
 #define S21_DECIMEL_H
 
 typedef union {
-    int num[4];
+    unsigned int num[4];
     struct {
-        int mantissa[3];
-        int little_word : 16;
-        int exp : 8;
-        int _void : 7;
-        int sign : 1;
+        unsigned int mantissa[3];
+        unsigned int little_word : 16;
+        unsigned int exp : 8;
+        unsigned int _void : 7;
+        unsigned int sign : 1;
     } bits;
 } s21_decimal;
 
