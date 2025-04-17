@@ -21,11 +21,8 @@ void decimal_summ(s21_decimal value_1, s21_decimal value_2,
   if (value_1.bits.sign || value_2.bits.sign) {
     for (int i = 0; i < 3; i++) {
       if (value_1.bits.mantissa[i] < value_2.bits.mantissa[i]) {
-        unsigned int ostatok =
-            value_2.bits.mantissa[i] - value_1.bits.mantissa[i];
-        unsigned int sum = (int)value_1.bits.mantissa[i] -
-                           (int)value_2.bits.mantissa[i] - carry +
-                           (ostatok * 2);
+        unsigned int sum = (int)value_2.bits.mantissa[i] -
+                           (int)value_1.bits.mantissa[i] - carry;
         result->bits.sign = 1;
         carry = sum >> 32;
         result->bits.mantissa[i] = (sum & 0xFFFFFFFF);
@@ -48,7 +45,7 @@ void decimal_summ(s21_decimal value_1, s21_decimal value_2,
 
 int main() {
   s21_decimal dec1 = {3000, 3000, 3000, 0};
-  s21_decimal dec2 = {75634, 63423, 5664, 0x80000000};
+  s21_decimal dec2 = {3000, 3000, 3001, 0x80000000};
   s21_decimal result = {0};
   printf("Число 1 в двоичной системе : ");
   debug_print_binary(dec1);
