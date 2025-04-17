@@ -1,14 +1,15 @@
 #ifndef S21_DECIMAL_H
 #define S21_DECIMEL_H
+#include <stdbool.h>
 
 typedef union {
     unsigned int num[4];
     struct {
         unsigned int mantissa[3];
-        unsigned int little_word : 16;
-        unsigned int exp : 8;
-        unsigned int _void : 7;
-        unsigned int sign : 1;
+        int little_word : 16;
+        int exp : 8;
+        int _void : 7;
+        bool sign : 1;
     } bits;
 } s21_decimal;
 
