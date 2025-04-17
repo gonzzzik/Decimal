@@ -71,6 +71,11 @@ void print_comma(char* str, int exp) {
 }
 
 void debug_print_decimal(s21_decimal decimal) {
+    if(decimal.num[0] == 0 && decimal.num[1] == 0 && decimal.num[2] == 0) {
+        puts("0");
+        return;
+    }
+    
     int sign = (decimal.num[3] & 0x80000000) ? 1 : 0;
     char buffer[40] = {0};
     int i = 0;
@@ -96,14 +101,14 @@ void debug_print_decimal(s21_decimal decimal) {
         print_comma(temp, decimal.bits.exp);
 
     if (sign)
-        printf("\ndecimal в десятичной системе счисления : -%s\n", temp);
+        printf("-%s\n", temp);
     else
-        printf("\ndecimal в десятичной системе счисления : %s\n", temp);
+        printf("%s\n", temp);
 }
 
-int main() {
-    s21_decimal dec = {.bits.sign = 1, .bits.exp = -38, .bits.mantissa = {3855, 0, 0}};
-    debug_print_decimal(dec);
-    debug_print_binary(dec);
-    return 0;
-}
+// int main() {
+//     s21_decimal dec = {.bits.sign = 1, .bits.exp = -38, .bits.mantissa = {3855, 0, 0}};
+//     debug_print_decimal(dec);
+//     debug_print_binary(dec);
+//     return 0;
+// }
