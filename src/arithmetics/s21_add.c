@@ -18,35 +18,32 @@ int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
 void decimal_summ(s21_decimal value_1, s21_decimal value_2,
                   s21_decimal *result) {
   unsigned long long carry = 0;
-  if (value_1.bits.sign || value_2.bits.sign) {
-    for (int i = 0; i < 3; i++) {
-      if (value_1.bits.mantissa[i] < value_2.bits.mantissa[i]) {
-        unsigned int sum = (int)value_2.bits.mantissa[i] -
-                           (int)value_1.bits.mantissa[i] - carry;
-        result->bits.sign = 1;
-        carry = sum >> 32;
-        result->bits.mantissa[i] = (sum & 0xFFFFFFFF);
-      } else {
-        unsigned int sum =
-            value_1.bits.mantissa[i] - value_2.bits.mantissa[i] - carry;
-        carry = sum >> 32;
-        result->bits.mantissa[i] = (sum & 0xFFFFFFFF);
-      }
-    }
-  } else {
-    for (int i = 0; i < 3; i++) {
-      unsigned int sum =
-          value_1.bits.mantissa[i] + value_2.bits.mantissa[i] + carry;
-      carry = sum >> 32;
-      result->bits.mantissa[i] = (sum & 0xFFFFFFFF);
-    }
+  unsigned int sum = 0;
+
+  for (int i = 0; i < 3; i++) {
+    int is_negative = value_1.bits.sign || value_2.bits.sign;
+    sum = is_negative
+              ? (value_1.bits.mantissa[i] < value_2.bits.mantissa[i]
+                     ? (int)value_2.bits.mantissa[i] -
+                           (int)value_1.bits.mantissa[i] - carry
+                     : value_1.bits.mantissa[i] - value_2.bits.mantissa[i] -
+                           carry)
+              : value_1.bits.mantissa[i] + value_2.bits.mantissa[i] + carry;
+    carry = sum >> 32;
+    result->bits.mantissa[i] = (sum & 0xFFFFFFFF);
   }
+
+  result->bits.sign = 1 ? 1 : 0;
 }
 
+void normalize(s21_decimal value_1, s21_decimal value_2) {}
+
 int main() {
-  s21_decimal dec1 = {3000, 3000, 3000, 0};
-  s21_decimal dec2 = {3000, 3000, 3001, 0x80000000};
+  s21_decimal dec1 = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0};
+  s21_decimal dec2 = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0};
   s21_decimal result = {0};
+  char string[BUFSIZ] = {0};
+
   printf("Число 1 в двоичной системе : ");
   debug_print_binary(dec1);
   printf("Число 2 в двоичной системе : ");
@@ -63,5 +60,7 @@ int main() {
   printf("Результат в десятичной системе : ");
   debug_print_decimal(result);
 
+  print_comma(string, result.bits.exp);
+  printf("%s\n", string);
   return 0;
 }
