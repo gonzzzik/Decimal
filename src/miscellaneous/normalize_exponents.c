@@ -2,12 +2,11 @@
 
 #include "../s21_decimal.h"
 
-void set_common_exp(s21_decimal *value_1, s21_decimal *value_2);
-int less_common_multiple(int a, int b);
-int greatest_common_divider(int a, int b);
-void get_decimal_exponent(s21_decimal *dec);
 void multiply_by_10(s21_decimal *dec);
 bool divide_by_10(s21_decimal *dec);
+void align_exponents(s21_decimal *dec1, s21_decimal *dec2);
+void multiply_by_exponent(s21_decimal *dec);
+void divide_by_exponent(s21_decimal *dec);
 
 bool divide_by_10(s21_decimal *dec) {
   unsigned long long remainder = 0;  // остаток
