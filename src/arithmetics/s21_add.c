@@ -7,6 +7,7 @@ void decimal_summ(s21_decimal value_1, s21_decimal value_2,
 
 int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   memset(result, 0, sizeof(s21_decimal));
+  align_exponents(&value_1, &value_2);
   decimal_summ(value_1, value_2, result);
   return 0;
 }
@@ -49,17 +50,6 @@ void decimal_summ(s21_decimal value_1, s21_decimal value_2,
   int sign1 = value_1.bits.sign;
   int sign2 = value_2.bits.sign;
 
-  if (value_1.bits.exp > 0)
-    multiply_by_exponent(
-        value_1.bits.mantissa);  // ПОКА НЕ УБИРАТЬ (умножение складываемого
-                                 // числа на экспоненту, в будущем перенести
-                                 // экспоненту в результат)
-  if (value_2.bits.exp > 0)
-    multiply_by_exponent(
-        value_2.bits.mantissa);  // ПОКА НЕ УБИРАТЬ (умножение складываемого
-                                 // числа на экспоненту, в будущем перенести
-                                 // экспоненту в результат и умножить )
-
   for (int i = 0; i < 3; i++) {
     result->bits.mantissa[i] = 0;
   }
@@ -76,43 +66,37 @@ void decimal_summ(s21_decimal value_1, s21_decimal value_2,
       result->bits.sign = sign2;
     }
   }
+  result->bits.exp = value_1.bits.exp;
 }
 
 int main() {
-  s21_decimal dec1 = {0, 0, 1000000, 0x00000000};
-  s21_decimal dec2 = {0, 0, 9, 0x80000000};
+  s21_decimal dec_1 = {.bits.sign = 0, .bits.exp = 0, .bits.mantissa = {0, 1, 0}};
+  s21_decimal dec_2 = {.bits.sign = 0, .bits.exp = 5, .bits.mantissa = {0, 1, 0}};
+  s21_decimal dec_check = {.bits.sign = 0, .bits.exp = 5, .bits.mantissa = {0, 100001, 0}};
   s21_decimal result = {0};
 
-  get_decimal_exponent(&dec1);
-  get_decimal_exponent(&dec2);
+  printf("Число 1: ");
+  debug_print_decimal(dec_1);
+  printf("экспонента числа 1: %d\n",dec_1.bits.exp);
 
-  printf("Начальная экспонента числа 1: %d\n", dec1.bits.exp);
-  printf("Начальная экспонента числа 2: %d\n\n", dec2.bits.exp);
+  printf("Число 2: ");
+  debug_print_decimal(dec_2);
+  printf("экспонента числа 2: %d\n",dec_2.bits.exp);
 
-  printf("Число 1 с учётом экспоненты (exp = %d): ", dec1.bits.exp);
-  debug_print_decimal_with_no_exponent(dec1);
 
-  printf(
-      "Число 1 без учёта экспоненты (число, умноженное на экспоненту (exp = "
-      "%d)): ",
-      dec1.bits.exp);
-  debug_print_decimal(dec1);
-
-  printf("Число 2 с учётом экспоненты (exp = %d): ", dec2.bits.exp);
-  debug_print_decimal_with_no_exponent(dec2);
-
-  printf(
-      "Число 2 без учёта экспоненты (число, умноженное на экспоненту (exp = "
-      "%d)): ",
-      dec2.bits.exp);
-  debug_print_decimal(dec2);
-
-  align_exponents(&dec1,
-                  &dec2);  // Выравнивание экспонент обоих чисел перед сложением
-  s21_add(dec1, dec2, &result);  // Сложение
+  s21_add(dec_1, dec_2, &result);
 
   printf("\nРезультат сложения в десятичной системе: ");
   debug_print_decimal(result);
+  printf("Экспонента фактического результата: %d\n\n", result.bits.exp);
+  printf("Ожидаемый результат: ");
+  debug_print_decimal(dec_check);
+  printf("Экспонента ожидаемого результата: %d\n", dec_check.bits.exp);
+
+  printf("Двоичное представление фактического результата:\n");
+  debug_print_binary(result);
+  printf("\nДвоичное представление ожидаемого результата:\n");
+  debug_print_binary(dec_check);
 
   return 0;
 }

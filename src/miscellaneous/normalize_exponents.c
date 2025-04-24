@@ -22,51 +22,30 @@ bool divide_by_10(s21_decimal *dec) {
 }
 
 void multiply_by_10(s21_decimal *dec) {
+  unsigned long long carry = 0;
   for (int i = 0; i < 3; i++) {
-    dec->bits.mantissa[i] *= 10;
+      unsigned long long temp = (unsigned long long)dec->bits.mantissa[i] * 10 + carry;
+      dec->bits.mantissa[i] = (unsigned int)(temp & 0xFFFFFFFF);
+      carry = temp >> 32;
   }
-
-  if (dec->bits.mantissa[0] > 0xFFFFFFFF) {
-    dec->bits.mantissa[0] /= 10;
-    dec->bits.mantissa[1] += 1;
-  }
-}
-
-void get_decimal_exponent(s21_decimal *dec) {
-  while (dec->bits.exp < 28) {
-    unsigned int backup[3] = {dec->bits.mantissa[0], dec->bits.mantissa[1],
-                              dec->bits.mantissa[2]};
-
-    if (!divide_by_10(dec->bits.mantissa)) {
-      dec->bits.mantissa[0] = backup[0];
-      dec->bits.mantissa[1] = backup[1];
-      dec->bits.mantissa[2] = backup[2];
-      break;
-    }
-
-    dec->bits.exp++;
+  if (carry != 0) {
+      printf("ПЕРЕПОЛНЕНИЕ \n");
   }
 }
+
 
 void align_exponents(
     s21_decimal *dec1,
     s21_decimal *dec2) {  // сравнять экспоненты и нормализовать число в
-                          // соответствии с экспонентой
-  if (dec1->bits.exp && dec2->bits.exp) {
-    int exp1 = dec1->bits.exp;
-    int exp2 = dec2->bits.exp;
-
-    while (exp1 < exp2) {
+                          // соответствии с экспонентой (при положительной экспоненте)
+    while (dec1->bits.exp > dec2->bits.exp) {
       multiply_by_10(dec2);
-      dec2->bits.exp--;
-      exp2--;
+      dec2->bits.exp++;
     }
-    while (exp2 < exp1) {
+    while (dec2->bits.exp > dec1->bits.exp) {
       multiply_by_10(dec1);
-      dec1->bits.exp--;
-      exp1--;
+      dec1->bits.exp++;
     }
-  }
 }
 
 void multiply_by_exponent(s21_decimal *dec) {
