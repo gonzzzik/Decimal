@@ -3,9 +3,6 @@
 #include <string.h>
 
 #include "s21_decimal.h"
-typedef struct {
-  int bits[4];
-} dcml;
 
 void debug_print_binary(s21_decimal decimal) {
   const char BLUE[] = "\033[0;34m";

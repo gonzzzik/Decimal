@@ -1,6 +1,6 @@
 #include "s21_spec_foo.h"
 
-#include "debug.c"
+// #include "debug.c"
 #include "s21_decimal.h"
 
 static int s21_can_I_do_it(s21_decimal value) {
@@ -11,17 +11,17 @@ static void s21_dcml_init(s21_decimal *value) {
   for (int i = 0; i < 4; i++) value->bits[i] = 0;
 }
 
-static void s21_plus_1(s21_decimal val) {
+static void s21_plus_1(s21_decimal *val) {
   int flag = 1;
   for (int i = 0; i < 3 && flag; i++) {
-    if (val.bits[i] = __UINT32_MAX__)
-      val.bits[i] = 0;
+    if (val->bits[i] == __UINT32_MAX__)
+      val->bits[i] = 0;
     else
-      val.bits[i] += 1, flag = 0;
+      val->bits[i] += 1, flag = 0;
   }
 }
 
-static void s21_muldev_int(s21_big_decimal *big_dcml, int operation,
+/*static void s21_muldev_int(s21_big_decimal *big_dcml, int operation,
                            int operand, int count) {
   unsigned long tmp = 0, rem = 0;
   while (count) {
@@ -40,30 +40,31 @@ static void s21_muldev_int(s21_big_decimal *big_dcml, int operation,
     count--;
   }
 }
-static int s21_can_I_do_float(long double num) {
-  return (isnan(num) || isinf(num)) ? 1 : 0;
-}
+ static int s21_can_I_do_float(long double num) {
+   return (isnan(num) || isinf(num)) ? 1 : 0;
+ }
 
-static void normalize(s21_decimal dcml1, s21_decimal dcml2,
-                      s21_big_decimal *big_dcml1, s21_big_decimal *big_dcml2) {
-  big_dcml1->bits[7] = dcml1.bits[3];
-  big_dcml2->bits[7] = dcml2.bits[3];
-  for (int i = 2; i >= 0; i--) {
-    big_dcml1->bits[i] = dcml1.bits[i];
-    big_dcml2->bits[i] = dcml2.bits[i];
-  }
+ static void normalize(s21_decimal dcml1, s21_decimal dcml2,
+                       s21_big_decimal *big_dcml1, s21_big_decimal *big_dcml2) {
+   big_dcml1->bits[7] = dcml1.bits[3];
+   big_dcml2->bits[7] = dcml2.bits[3];
+   for (int i = 2; i >= 0; i--) {
+     big_dcml1->bits[i] = dcml1.bits[i];
+     big_dcml2->bits[i] = dcml2.bits[i];
+   }
 
-  if (dcml1.bit.exp > dcml2.bit.exp)
-    BIG_normalize(big_dcml1, big_dcml2);
-  else if (dcml1.bit.exp < dcml2.bit.exp)
-    BIG_normalize(big_dcml2, big_dcml1);
+   if (dcml1.bit.exp > dcml2.bit.exp)
+     BIG_normalize(big_dcml1, big_dcml2);
+   else if (dcml1.bit.exp < dcml2.bit.exp)
+     BIG_normalize(big_dcml2, big_dcml1);
 
-  return;
-}
+   return;
+ }
 
-static void BIG_normalize(s21_big_decimal *big_dcml1,
-                          s21_big_decimal *big_dcml2) {
-  int delta_exp = big_dcml2->bit.exp - big_dcml1->bit.exp;
-  s21_muldev_int(big_dcml2, 1, 10, delta_exp);
-  big_dcml2->bit.exp -= delta_exp;
-}
+ static void BIG_normalize(s21_big_decimal *big_dcml1,
+                           s21_big_decimal *big_dcml2) {
+   int delta_exp = big_dcml2->bit.exp - big_dcml1->bit.exp;
+   s21_muldev_int(big_dcml2, 1, 10, delta_exp);
+   big_dcml2->bit.exp -= delta_exp;
+ }
+  */
