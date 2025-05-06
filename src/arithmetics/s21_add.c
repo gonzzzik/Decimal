@@ -1,68 +1,50 @@
 #include "../s21_decimal.h"
 #include "../s21_spec_foo.c"
 
-void decimal_summ(s21_decimal value_1, s21_decimal value_2,
-                  s21_decimal *result);
-
 int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
-  memset(result, 0, sizeof(s21_decimal));
-  align_exponents(&value_1, &value_2);
-  decimal_summ(value_1, value_2, result);
-  return 0;
-}
+  s21_big_decimal val1 = {{0}}, val2 = {{0}}, res = {{0}};
+  normalize(value_1, value_2, &val1, &val2);
 
-void decimal_summ(s21_decimal value_1, s21_decimal value_2,
-                  s21_decimal *result) {
-  int sign1 = value_1.bit.sign;
-  int sign2 = value_2.bit.sign;
-
-  for (int i = 0; i < 3; i++) {
-    result->bit.mantissa[i] = 0;
-  }
+  int sign1 = val1.bit.sign;
+  int sign2 = val2.bit.sign;
+  value_1.bit.sign = value_2.bit.sign = 0;
 
   if (sign1 == sign2) {
-    add_mantissas(value_1, value_2, result);
-    result->bit.sign = sign1;
-  } else if (sign1 > sign2) {
-    subtract_mantissas(value_1, value_2, result);
-    result->bit.sign = sign1;
+    res = add_mantissas(val1, val2);
+    res.bit.sign = sign1;
+  } else if (s21_is_greater(value_1, value_2)) {
+    res = subtract_mantissas(val1, val2);
+    res.bit.sign = sign1;
   } else {
-    subtract_mantissas(value_2, value_1, result);
-    result->bit.sign = sign2;
+    res = subtract_mantissas(val2, val1);
+    res.bit.sign = sign2;
   }
 
-  result->bit.exp = value_1.bit.exp;
+  res.bit.exp = value_1.bit.exp;
+
+  return big_to_dcml(res, result);
 }
 
-void add_mantissas(s21_decimal val1, s21_decimal val2,
-                   s21_decimal *res) {  // функция сложения мантисс
-  unsigned long long carry = 0;
+int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
+  s21_big_decimal val1 = {{0}}, val2 = {{0}}, res = {{0}};
+  normalize(value_1, value_2, &val1, &val2);
 
-  for (int i = 0; i < 3; i++) {
-    unsigned long long temp_sum = (unsigned long long)val1.bit.mantissa[i] +
-                                  (unsigned long long)val2.bit.mantissa[i] +
-                                  carry;
+  int sign1 = val1.bit.sign;
+  int sign2 = val2.bit.sign;
+  value_1.bit.sign = value_2.bit.sign = 0;
 
-    res->bit.mantissa[i] = (unsigned int)(temp_sum & 0xFFFFFFFF);
-    carry = temp_sum >> 32;
+  if (sign1 != sign2) {
+    res = add_mantissas(val1, val2);
+    res.bit.sign = sign1;
+  } else if (s21_is_greater(value_1, value_2)) {
+    res = subtract_mantissas(val1, val2);
+    res.bit.sign = sign1;
+  } else {
+    res = subtract_mantissas(val2, val1);
+    res.bit.sign = sign2;
   }
-}
 
-void subtract_mantissas(s21_decimal val1, s21_decimal val2,
-                        s21_decimal *res) {  // функция вычитания мантисс
-  long long borrow = 0;
+  res.bit.exp = value_1.bit.exp;
 
-  for (int i = 0; i < 3; i++) {
-    long long diff = (long long)val1.bit.mantissa[i] -
-                     (long long)val2.bit.mantissa[i] - borrow;
-
-    if (diff < 0) {
-      diff += ((long long)1 << 32);
-      borrow = 1;
-    } else {
-      borrow = 0;
-    }
-
-    res->bit.mantissa[i] = (unsigned int)(diff & 0xFFFFFFFF);
-  }
+  return big_to_dcml(res, result);
 }
