@@ -8,6 +8,8 @@
                 /* "-Wall", "-Werror", "-Wextra", "-std=c11", */
                 "-fdiagnostics-color=always",
                 "-g",
+                /* "${fileDirname}/../s21_spec_foo.o", */
+                "${fileDirname}/../debug.c",
                 "${file}",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"

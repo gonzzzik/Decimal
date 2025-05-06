@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "s21_decimal.h"
+#include "s21_spec_foo.h"
 
 void debug_print_binary(s21_decimal decimal) {
   const char BLUE[] = "\033[0;34m";

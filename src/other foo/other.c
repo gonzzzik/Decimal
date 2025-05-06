@@ -23,21 +23,11 @@ int s21_truncate(s21_decimal value, s21_decimal* result) {
 
   *result = value;
   while (result->bit.exp) {
-    dev_10(result);
+    dev_int(result, 10);
     result->bit.exp--;
   }
 
   return 0;
-}
-
-uint32_t dev_10(s21_decimal* value) {
-  uint64_t rem = 0, tmp = 0;
-  for (int i = 2; i >= 0; i--) {
-    tmp = (rem << 32) | value->bits[i];
-    rem = tmp % 10;
-    value->bits[i] = tmp / 10;
-  }
-  return rem;
 }
 
 int s21_round(s21_decimal value, s21_decimal* result) {
@@ -48,7 +38,7 @@ int s21_round(s21_decimal value, s21_decimal* result) {
 
   value.bit.exp--;
   s21_truncate(value, &value);
-  uint32_t rem = dev_10(&value);
+  __uint32_t rem = dev_int(&value, 10);
   value.bit.exp = 0;
   if (rem >= 5) s21_plus_1(&value);
 

@@ -1,6 +1,5 @@
-#include "../debug.c"
-#include "../miscellaneous/normalize_exponents.c"
 #include "../s21_decimal.h"
+#include "../s21_spec_foo.c"
 
 void decimal_summ(s21_decimal value_1, s21_decimal value_2,
                   s21_decimal *result);
@@ -10,6 +9,29 @@ int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   align_exponents(&value_1, &value_2);
   decimal_summ(value_1, value_2, result);
   return 0;
+}
+
+void decimal_summ(s21_decimal value_1, s21_decimal value_2,
+                  s21_decimal *result) {
+  int sign1 = value_1.bit.sign;
+  int sign2 = value_2.bit.sign;
+
+  for (int i = 0; i < 3; i++) {
+    result->bit.mantissa[i] = 0;
+  }
+
+  if (sign1 == sign2) {
+    add_mantissas(value_1, value_2, result);
+    result->bit.sign = sign1;
+  } else if (sign1 > sign2) {
+    subtract_mantissas(value_1, value_2, result);
+    result->bit.sign = sign1;
+  } else {
+    subtract_mantissas(value_2, value_1, result);
+    result->bit.sign = sign2;
+  }
+
+  result->bit.exp = value_1.bit.exp;
 }
 
 void add_mantissas(s21_decimal val1, s21_decimal val2,
@@ -43,28 +65,4 @@ void subtract_mantissas(s21_decimal val1, s21_decimal val2,
 
     res->bit.mantissa[i] = (unsigned int)(diff & 0xFFFFFFFF);
   }
-}
-
-void decimal_summ(s21_decimal value_1, s21_decimal value_2,
-                  s21_decimal *result) {
-  int sign1 = value_1.bit.sign;
-  int sign2 = value_2.bit.sign;
-
-  for (int i = 0; i < 3; i++) {
-    result->bit.mantissa[i] = 0;
-  }
-
-  if (sign1 == sign2) {
-    add_mantissas(value_1, value_2, result);
-    result->bit.sign = sign1;
-  } else {
-    if (value_1.bit.mantissa > value_2.bit.mantissa) {
-      subtract_mantissas(value_1, value_2, result);
-      result->bit.sign = sign1;
-    } else {
-      subtract_mantissas(value_2, value_1, result);
-      result->bit.sign = sign2;
-    }
-  }
-  result->bit.exp = value_1.bit.exp;
 }
