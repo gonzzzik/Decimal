@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "s21_spec_foo.h": "c",
-        "s21_decimal.h": "c"
+        "s21_decimal.h": "c",
+        "cstdlib": "c"
     }
 }

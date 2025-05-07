@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "s21_spec_foo.h"
@@ -99,19 +100,17 @@ void debug_print_decimal(s21_decimal decimal) {
 }
 
 /* int main() {
-  s21_decimal v1 = {.bit.sign = 1, .bit.exp = 2, .bit.mantissa = {3855, 15, 2}};
+  s21_decimal v1 = {{0x00000467, 0x0000007A, 0x00003215, 0x80010000}};
   s21_decimal v2 = {.bit.sign = 1, .bit.exp = 2, .bit.mantissa = {3855, 15, 2}};
-  s21_decimal dec = {
-      .bit.sign = 1, .bit.exp = 2, .bit.mantissa = {3855, 15, 2}};
+  s21_decimal dec;
 
+  s21_round(v1, &dec);
+  debug_print_decimal(v1);
+  debug_print_binary(v1);
+  debug_print_decimal(v2);
+  debug_print_binary(v2);
 
-debug_print_decimal(v1);
-debug_print_binary(v1);
-debug_print_decimal(v2);
-debug_print_binary(v2);
-
-debug_print_decimal(dec);
-debug_print_binary(dec);
-return 0;
-}
-*/
+  debug_print_decimal(dec);
+  debug_print_binary(dec);
+  return 0;
+} */

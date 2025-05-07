@@ -28,4 +28,27 @@ int s21_from_decimal_to_int(s21_decimal src, int *dst) {
 
 int s21_from_float_to_decimal(float src, s21_decimal *dst) { return 0; }
 
-int s21_from_decimal_to_float(s21_decimal src, float *dst) { return 0; }
+int s21_from_decimal_to_float(s21_decimal src, float *dst) {
+  if (s21_can_I_do_it(src)) {
+    return 1;
+  }
+  *dst = 0;
+
+  int scale = src.bit.exp;
+
+  __uint32_t low = src.bit.mantissa[0];
+  __uint32_t mid = src.bit.mantissa[1];
+  __uint32_t high = src.bit.mantissa[2];
+
+  float value =
+      (float)high * pow(2.0, 64) + (float)mid * pow(2.0, 32) + (float)low;
+  value = value / pow(10, scale);
+
+  if (src.bit.sign) {
+    value = -value;
+  }
+
+  *dst = (float)value;
+
+  return 0;
+}
