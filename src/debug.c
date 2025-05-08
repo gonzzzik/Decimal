@@ -47,7 +47,7 @@ void debug_print_binary(s21_decimal decimal) {
 
 void print_comma(char* str, int exp) {
   if (-exp > 38) {
-    memcpy(str, "(null)", 7);
+    memcpy(str, "(s21_NULL)", 7);
     return;
   }
   int len = strlen(str), i = 0, j = 0;

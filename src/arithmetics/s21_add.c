@@ -2,92 +2,100 @@
 #include "../s21_spec_foo.h"
 
 int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
-  s21_big_decimal val1 = {{0}}, val2 = {{0}}, res = {{0}};
-  normalize(value_1, value_2, &val1, &val2);
+    s21_big_decimal val1 = {{0}}, val2 = {{0}}, res = {{0}};
+    normalize(value_1, value_2, &val1, &val2);
 
-  int sign1 = val1.bit.sign;
-  int sign2 = val2.bit.sign;
-  value_1.bit.sign = value_2.bit.sign = 0;
+    int sign1 = val1.bit.sign;
+    int sign2 = val2.bit.sign;
+    value_1.bit.sign = value_2.bit.sign = 0;
 
-  if (sign1 == sign2) {
-    res = add_mantissas(val1, val2);
-    res.bit.sign = sign1;
-  } else if (s21_is_greater(value_1, value_2)) {
-    res = subtract_mantissas(val1, val2);
-    res.bit.sign = sign1;
-  } else {
-    res = subtract_mantissas(val2, val1);
-    res.bit.sign = sign2;
-  }
+    if (sign1 == sign2) {
+        res = add_mantissas(val1, val2);
+        res.bit.sign = sign1;
+    } else if (s21_is_greater(value_1, value_2)) {
+        res = subtract_mantissas(val1, val2);
+        res.bit.sign = sign1;
+    } else {
+        res = subtract_mantissas(val2, val1);
+        res.bit.sign = sign2;
+    }
 
-  res.bit.exp = value_1.bit.exp;
+    if (value_2.bit.exp > value_1.bit.exp)
+        res.bit.exp = value_2.bit.exp;
+    else
+        res.bit.exp = value_1.bit.exp;
 
-  return big_to_dcml(res, result);
+    if (res.bit.mantissa && (sign1 || sign2)) res.bit.sign = 1;
+
+    return big_to_dcml(res, result);
 }
 
 int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
-  s21_big_decimal val1 = {{0}}, val2 = {{0}}, res = {{0}};
-  normalize(value_1, value_2, &val1, &val2);
+    s21_big_decimal val1 = {{0}}, val2 = {{0}}, res = {{0}};
+    normalize(value_1, value_2, &val1, &val2);
 
-  int sign1 = val1.bit.sign;
-  int sign2 = val2.bit.sign;
-  value_1.bit.sign = value_2.bit.sign = 0;
+    int sign1 = val1.bit.sign;
+    int sign2 = val2.bit.sign;
+    value_1.bit.sign = value_2.bit.sign = 0;
 
-  if (sign1 != sign2) {
-    res = add_mantissas(val1, val2);
-    res.bit.sign = sign1;
-  } else if (s21_is_greater(value_1, value_2)) {
-    res = subtract_mantissas(val1, val2);
-    res.bit.sign = sign1;
-  } else {
-    res = subtract_mantissas(val2, val1);
-    res.bit.sign = sign2;
-  }
+    if (sign1 != sign2) {
+        res = add_mantissas(val1, val2);
+        res.bit.sign = sign1;
+    } else if (s21_is_greater(value_1, value_2)) {
+        res = subtract_mantissas(val1, val2);
+        res.bit.sign = sign1;
+    } else {
+        res = subtract_mantissas(val2, val1);
+        res.bit.sign = sign2;
+    }
 
-  res.bit.exp = value_1.bit.exp;
+    if (value_2.bit.exp > value_1.bit.exp)
+        res.bit.exp = value_2.bit.exp;
+    else
+        res.bit.exp = value_1.bit.exp;
 
-  return big_to_dcml(res, result);
+    return big_to_dcml(res, result);
 }
 
 int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
-  s21_big_decimal val1 = {{0}}, val2 = {{0}}, res = {{0}};
-  normalize(value_1, value_2, &val1, &val2);
+    s21_big_decimal val1 = {{0}}, val2 = {{0}}, res = {{0}};
+    normalize(value_1, value_2, &val1, &val2);
 
-  while (val2.bits[0]) {
-    if (s21_muldev_int(&val2, dev, 2, 1)) res = add_mantissas(res, val1);
-    s21_muldev_int(&val1, mul, 2, 1);
-  }
-  res.bit.exp = val1.bit.exp + val2.bit.exp;
-  int err = big_to_dcml(res, result);
+    while (val2.bits[0]) {
+        if (s21_muldev_int(&val2, dev, 2, 1)) res = add_mantissas(res, val1);
+        s21_muldev_int(&val1, mul, 2, 1);
+    }
+    res.bit.exp = val1.bit.exp + val2.bit.exp;
+    int err = big_to_dcml(res, result);
 
-  if (err) s21_dcml_init(result);
-  return err;
+    if (err) s21_dcml_init(result);
+    return err;
 }
 
 int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
-  if (!value_2.bits[0] && !value_2.bits[1] && !value_2.bits[2]) return 3;
+    if (!value_2.bits[0] && !value_2.bits[1] && !value_2.bits[2]) return 3;
 
-  s21_big_decimal val1 = {{0}}, val2 = {{0}}, res = {{0}};
-  normalize(value_1, value_2, &val1, &val2);
+    s21_big_decimal val1 = {{0}}, val2 = {{0}}, res = {{0}};
+    normalize(value_1, value_2, &val1, &val2);
 
-  res.bit.exp = (val1.bit.exp > val2.bit.exp) ? val1.bit.exp - val2.bit.exp : 0;
-  while ((val1.bits[6] >> 31) && (val2.bits[6] >> 31)) {
-    s21_muldev_int(&val1, mul, 2, 1);
-    s21_muldev_int(&val2, mul, 2, 1);
-    res.bit.exp++;
-  }
-
-  while (!(val1.bits[0] % 2)) {
-    if (s21_big_is_greater(val1, val2)) {
-      val1 = subtract_mantissas(val1, val2);
-      s21_big_plus_1(&res);
+    res.bit.exp = (val1.bit.exp > val2.bit.exp) ? val1.bit.exp - val2.bit.exp : 0;
+    while ((val1.bits[6] >> 31) && (val2.bits[6] >> 31)) {
+        s21_muldev_int(&val1, mul, 2, 1);
+        s21_muldev_int(&val2, mul, 2, 1);
+        res.bit.exp++;
     }
-    s21_muldev_int(&res, mul, 2, 1);
-    s21_muldev_int(&val2, dev, 2, 1);
-  }
 
-  int err = big_to_dcml(res, result);
+    while (!(val1.bits[0] % 2)) {
+        if (s21_big_is_greater(val1, val2)) {
+            val1 = subtract_mantissas(val1, val2);
+            s21_big_plus_1(&res);
+        }
+        s21_muldev_int(&res, mul, 2, 1);
+        s21_muldev_int(&val2, dev, 2, 1);
+    }
 
-  if (err) s21_dcml_init(result);
-  return err;
+    int err = big_to_dcml(res, result);
+
+    if (err) s21_dcml_init(result);
+    return err;
 }

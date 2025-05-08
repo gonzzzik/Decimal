@@ -148,7 +148,7 @@ END_TEST
 
 START_TEST(test_round_with_error) {
   s21_decimal empty = {{0, 0, 0, 0}};
-  s21_decimal *tmp = _i == 0 ? NULL : &empty;
+  s21_decimal *tmp = _i == 0 ? s21_NULL : &empty;
   int code = s21_round(error_array[_i], tmp);
   ck_assert_int_eq(code, 1);
 }

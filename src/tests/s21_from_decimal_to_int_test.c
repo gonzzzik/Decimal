@@ -53,7 +53,7 @@ END_TEST
 
 START_TEST(test_from_decimal_to_int_with_error) {
   int empty = 0;
-  int *tmp = _i == 0 ? NULL : &empty;
+  int *tmp = _i == 0 ? s21_NULL : &empty;
   int code = s21_from_decimal_to_int(error_array[_i], tmp);
   ck_assert_int_eq(code, error_result[_i]);
 }

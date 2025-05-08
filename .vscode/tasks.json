@@ -8,11 +8,15 @@
                 /* "-Wall", "-Werror", "-Wextra", "-std=c11", */
                 "-fdiagnostics-color=always",
                 "-g",
-                // "${fileDirname}/../debug.c",
+                "${fileDirname}/../debug.c",
+                "${fileDirname}/../arithmetics/s21_spec_math.c",
+                "${fileDirname}/../s21_spec_foo.c",
+                "${fileDirname}/../comparison/s21_spec_comp.c",
+                // "${fileDirname}/../other/other.c",
                 "${file}",
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"
-                // "-L ./ -l:s21_decimal.a"
+                "${fileDirname}/${fileBasenameNoExtension}",
+                "-lm"
             ],
             "options": {
                 "cwd": "${fileDirname}"

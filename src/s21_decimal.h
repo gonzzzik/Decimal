@@ -13,6 +13,8 @@ typedef union {
   } bit;
 } s21_decimal;
 
+#define s21_NULL (void *)0
+
 // Arithmetic foo
 int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result);
 int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result);

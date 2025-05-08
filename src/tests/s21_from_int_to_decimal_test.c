@@ -55,7 +55,7 @@ END_TEST
 
 START_TEST(test_from_int_to_decimal_with_error) {
   int empty = 0;
-  s21_decimal *tmp = NULL;
+  s21_decimal *tmp = s21_NULL;
   int code = s21_from_int_to_decimal(empty, tmp);
   ck_assert_int_eq(code, 1);
 }

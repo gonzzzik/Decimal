@@ -9,7 +9,7 @@
 // Арифметика
 Suite *suite_add(void);
 // Suite *suite_div(void);
-Suite *suite_mul(void);
+// Suite *suite_mul(void);
 Suite *suite_sub(void);
 
 // Сравнение

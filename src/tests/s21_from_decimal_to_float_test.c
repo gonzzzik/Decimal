@@ -82,7 +82,7 @@ END_TEST
 
 START_TEST(test_from_decimal_to_float_with_error) {
   float empty = 0;
-  float *tmp = _i == 0 ? NULL : &empty;
+  float *tmp = _i == 0 ? s21_NULL : &empty;
   int code = s21_from_decimal_to_float(error_array[_i], tmp);
   ck_assert_int_eq(code, 1);
 }

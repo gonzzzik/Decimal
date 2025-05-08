@@ -41,4 +41,9 @@ void s21_plus_1(s21_decimal *val);
 /* s21_spec_comp.c */
 int s21_big_is_equal(s21_big_decimal val1, s21_big_decimal val2);
 int s21_big_is_greater(s21_big_decimal val1, s21_big_decimal val2);
+
+/* debug.c */
+void debug_print_binary(s21_decimal decimal);
+void debug_print_decimal(s21_decimal decimal);
+
 #endif

@@ -36,7 +36,7 @@ gcov_report: clean test
 	rm -rf coverage.info test_executable
 
 clean:
-	clear
+	#clear
 	rm -rf *.out $(OBJECT_FILES) *.a
 	rm -rf *.gcda *.gcno
 	rm -rf coverage_report coverage.info
