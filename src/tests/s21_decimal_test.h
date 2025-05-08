@@ -7,10 +7,10 @@
 #include "../s21_decimal.h"
 
 // Арифметика
-Suite *suite_add(void);
-// Suite *suite_div(void);
-// Suite *suite_mul(void);
-Suite *suite_sub(void);
+// Suite *suite_add(void);
+Suite *suite_div(void);
+Suite *suite_mul(void);
+// Suite *suite_sub(void);
 
 // Сравнение
 Suite *suite_is_less(void);
@@ -20,13 +20,13 @@ Suite *suite_is_greater_or_equal(void);
 Suite *suite_is_equal(void);
 Suite *suite_is_not_equal(void);
 
-// // Преобразователи
+// Преобразователи
 Suite *suite_from_int_to_decimal(void);
-// Suite *suite_from_float_to_decimal(void);
+Suite *suite_from_float_to_decimal(void);
 Suite *suite_from_decimal_to_int(void);
 Suite *suite_from_decimal_to_float(void);
 
-// // Другие
+// Другие
 Suite *suite_floor(void);
 Suite *suite_negate(void);
 Suite *suite_round(void);

@@ -1,22 +1,20 @@
 #include "../s21_spec_foo.h"
 
-s21_big_decimal add_mantissas(s21_big_decimal val1, s21_big_decimal val2) {
+void add_mantissas(s21_big_decimal val1, s21_big_decimal val2, s21_big_decimal *res) {
     unsigned long long carry = 0;
-    s21_big_decimal res = {{0}};
 
     for (int i = 0; i < 7; i++) {
         unsigned long long temp_sum =
             (unsigned long long)val1.bit.mantissa[i] + (unsigned long long)val2.bit.mantissa[i] + carry;
 
-        res.bit.mantissa[i] = (unsigned int)(temp_sum & 0xFFFFFFFF);
+        res->bit.mantissa[i] = (unsigned int)(temp_sum & 0xFFFFFFFF);
         carry = temp_sum >> 32;
     }
-    return res;
 }
 
-s21_big_decimal subtract_mantissas(s21_big_decimal val1, s21_big_decimal val2) {
+void subtract_mantissas(s21_big_decimal val1, s21_big_decimal val2, s21_big_decimal *res) {
     long long borrow = 0;
-    s21_big_decimal res = {{0}};
+
     for (int i = 0; i < 7; i++) {
         long long diff = (long long)val1.bit.mantissa[i] - (long long)val2.bit.mantissa[i] - borrow;
 
@@ -27,12 +25,11 @@ s21_big_decimal subtract_mantissas(s21_big_decimal val1, s21_big_decimal val2) {
             borrow = 0;
         }
 
-        res.bit.mantissa[i] = (unsigned int)(diff & 0xFFFFFFFF);
+        res->bit.mantissa[i] = (unsigned int)(diff & 0xFFFFFFFF);
     }
-    return res;
 }
 
-__uint64_t s21_muldev_int(s21_big_decimal *big_dcml, int operation, int operand, int iterations) {
+__uint64_t s21_muldiv_int(s21_big_decimal *big_dcml, int operation, int operand, int iterations) {
     __uint64_t tmp = 0, rem = 0;
     while (iterations) {
         if (operation) {
@@ -53,7 +50,7 @@ __uint64_t s21_muldev_int(s21_big_decimal *big_dcml, int operation, int operand,
     return rem;
 }
 
-__uint64_t dev_int(s21_decimal *value, int del) {
+__uint64_t div_int(s21_decimal *value, int del) {
     __uint64_t rem = 0, tmp = 0;
     for (int i = 2; i >= 0; i--) {
         tmp = (rem << 32) | value->bits[i];

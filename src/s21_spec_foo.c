@@ -13,9 +13,9 @@ void s21_dcml_init(s21_decimal *value) {
 void bank_round(s21_big_decimal *dcml) {
     s21_big_decimal tmp_dcml = {{0}};
 
-    s21_muldev_int(dcml, dev, 10, 1);
+    s21_muldiv_int(dcml, div, 10, 1);
     dcml->bit.exp--, tmp_dcml = *dcml;
-    __uint64_t rem = s21_muldev_int(&tmp_dcml, dev, 10, 1);
+    __uint64_t rem = s21_muldiv_int(&tmp_dcml, div, 10, 1);
     if (rem % 2) s21_big_plus_1(dcml);
 }
 
@@ -38,13 +38,13 @@ void normalize(s21_decimal dcml1, s21_decimal dcml2, s21_big_decimal *big_dcml1,
 
 void BIG_normalize(s21_big_decimal *big_dcml1, s21_big_decimal *big_dcml2) {
     int delta_exp = big_dcml1->bit.exp - big_dcml2->bit.exp;
-    s21_muldev_int(big_dcml2, mul, 10, delta_exp);
+    s21_muldiv_int(big_dcml2, mul, 10, delta_exp);
     big_dcml2->bit.exp += delta_exp;
 }
 
 int big_to_dcml(s21_big_decimal dcml, s21_decimal *res) {
     s21_dcml_init(res);
-    if(dcml.bit.sign) res->bit.sign = 1;
+
     int err = 0;
 
     while ((dcml.bits[3] || dcml.bits[4] || dcml.bits[5] || dcml.bits[6]) && dcml.bit.exp) {
@@ -52,13 +52,15 @@ int big_to_dcml(s21_big_decimal dcml, s21_decimal *res) {
     }
 
     if (dcml.bits[3])
-        err = 1;
+        err = (dcml.bit.sign) ? 2 : 1;
     else if (dcml.bit.exp > 28) {
-        while (dcml.bits[0] && dcml.bit.exp > 28) bank_round(&dcml);
+        while ((dcml.bits[0] || dcml.bits[1] || dcml.bits[2]) && dcml.bit.exp > 28) bank_round(&dcml);
         if (dcml.bit.exp > 28) err = 2;
-    } else {
+    }
+    if (!err) {
         for (int i = 0; i < 3; i++) res->bits[i] = dcml.bits[i];
         res->bit.exp = dcml.bit.exp;
+        if (dcml.bit.sign) res->bit.sign = 1;
     }
 
     return err;

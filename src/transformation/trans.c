@@ -31,56 +31,42 @@ int s21_from_decimal_to_int(s21_decimal src, int *dst) {
 }
 
 int s21_from_float_to_decimal(float src, s21_decimal *dst) {
-    if (dst == s21_NULL || /*  !(src > 0 && src < 1e-28) || */ (isnan(src) || isinf(src))) return 1;
+    if (dst == s21_NULL || (src > 0 && src < 1e-28) || isnan(src) || isinf(src)) return 1;
 
-    if (src == 0.0f) {
-        return 0;
-    }
-
-    int sign = 0;
-    if (src < 0) {
-        sign = 1;
-        src = -src;
-    }
-
-    if (src < 1e-28f) {
-        s21_dcml_init(dst);
-    }
-
+    int res = 0;
     s21_dcml_init(dst);
-    double val = (double)src;
-    int approx_exp = (int)floor(log10(val));
-    if (approx_exp < 0) approx_exp = 0;
-    int scale = 0;
-    val = val * pow(10, approx_exp);
-    scale = approx_exp;
-    while (scale < 28 && floor(val) != val) {
-        val *= 10.0;
-        scale++;
-    }
-    double intpart;
-    double fracpart = modf(val, &intpart);
-    if (fracpart > 0.5) {
-        intpart += 1.0;
-    } else if (fracpart == 0.5) {
-        if (fmod(intpart, 2.0) != 0.0) {
-            intpart += 1.0;
+    if (src != 0.0f) {
+        s21_big_decimal big_dec = {{0}};
+        if (src < 0) big_dec.bit.sign = 1, src = -src;
+        double val = (double)src;
+        int exp = (int)floor(log10(val));
+        if (exp < 0) exp = 0;
+        int scale = 0;
+        val = val * pow(10, exp);
+        scale = exp;
+        while (scale < 28 && floor(val) != val) {
+            val *= 10.0;
+            scale++;
         }
+        double intpart;
+        double fracpart = modf(val, &intpart);
+        if (fracpart > 0.5) {
+            intpart += 1.0;
+        } else if (fracpart == 0.5) {
+            if (fmod(intpart, 2.0) != 0.0) {
+                intpart += 1.0;
+            }
+        }
+
+        unsigned long long mantissa64 = (unsigned long long)intpart;
+        big_dec.bit.mantissa[0] = (unsigned int)(mantissa64 & 0xFFFFFFFF);
+        big_dec.bit.mantissa[1] = (unsigned int)((mantissa64 >> 32) & 0xFFFFFFFF);
+        big_dec.bit.exp = scale;
+
+        res = big_to_dcml(big_dec, dst);
     }
-    s21_big_decimal big_dec = {{0}};
 
-    unsigned long long mantissa64 = (unsigned long long)intpart;
-    big_dec.bit.mantissa[0] = (unsigned int)(mantissa64 & 0xFFFFFFFF);
-    big_dec.bit.mantissa[1] = (unsigned int)((mantissa64 >> 32) & 0xFFFFFFFF);
-
-    big_dec.bit.exp = scale;
-    big_dec.bit.sign = sign;
-
-    bank_round(&big_dec);
-
-    int res = big_to_dcml(big_dec, dst);
-
-    return res;
+    return res ? 1 : 0;
 }
 
 int s21_from_decimal_to_float(s21_decimal src, float *dst) {

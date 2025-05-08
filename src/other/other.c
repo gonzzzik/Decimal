@@ -23,7 +23,7 @@ int s21_truncate(s21_decimal value, s21_decimal* result) {
 
     *result = value;
     while (result->bit.exp) {
-        dev_int(result, 10);
+        div_int(result, 10);
         result->bit.exp--;
     }
 
@@ -40,7 +40,7 @@ int s21_round(s21_decimal value, s21_decimal* result) {
     if (value.bit.exp) {
         value.bit.exp--;
         s21_truncate(value, &value);
-        __uint32_t rem = dev_int(&value, 10);
+        __uint32_t rem = div_int(&value, 10);
         value.bit.exp = 0;
         if (rem >= 5) s21_plus_1(&value);
     }
@@ -59,7 +59,7 @@ int s21_floor(s21_decimal value, s21_decimal* result) {
 
     int flag = 0;
     while (value.bit.exp) {
-        __uint32_t rem = dev_int(&value, 10);
+        __uint32_t rem = div_int(&value, 10);
         value.bit.exp--;
         if (rem) flag = 1;
     }
