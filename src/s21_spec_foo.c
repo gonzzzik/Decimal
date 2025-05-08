@@ -44,6 +44,7 @@ void BIG_normalize(s21_big_decimal *big_dcml1, s21_big_decimal *big_dcml2) {
 
 int big_to_dcml(s21_big_decimal dcml, s21_decimal *res) {
     s21_dcml_init(res);
+    if(dcml.bit.sign) res->bit.sign = 1;
     int err = 0;
 
     while ((dcml.bits[3] || dcml.bits[4] || dcml.bits[5] || dcml.bits[6]) && dcml.bit.exp) {
