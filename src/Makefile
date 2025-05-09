@@ -1,9 +1,12 @@
-CFLAGS = #-Wall -Werror -Wextra -std=c11
+CFLAGS = -Wall -Werror -Wextra -std=c11
+DIRS = . comparison other arithmetics transformation
 LIB_FLAGS = -L ./ -l:s21_decimal.a
 TEST_FLAGS = -lcheck -lm -lsubunit
 TEST_FILES = tests/*.c
-FILES = $(wildcard *.c comparison/*.c other/*.c arithmetics/*.c transformation/*.c)
-OBJECT_FILES = *.o comparison/*.o other/*.o arithmetics/*.o transformation/*.o
+FILES = $(wildcard $(addsuffix /*.c, $(DIRS)))
+
+OBJECT_FILES = $(wildcard $(addsuffix /*.o, $(DIRS))) $(wildcard $(addsuffix /*.out, $(DIRS))) $(wildcard $(addsuffix /*.a, $(DIRS)))
+GCOV_FILES = $(wildcard $(addsuffix /*.gcda, $(DIRS))) $(wildcard $(addsuffix /*.gcno, $(DIRS)))
 OBJECTS = ${patsubst %.c, %.o, ${FILES}}
 LD_FLAGS :=
 
@@ -19,8 +22,8 @@ s21_decimal.a: ${OBJECTS}
 
 clang:
 	clear
-	clang-format -n *.c *.h ${TEST_FILES} TESTS/*.h
-	clang-format -i *.c *.h ${TEST_FILES} TESTS/*.h
+	\clang-format -n $(FILES) *.h ${TEST_FILES} tests/*.h
+	\clang-format -i $(FILES) *.h ${TEST_FILES} tests/*.h
 
 test: s21_decimal.a
 	gcc $(TEST_FILES) $(CFLAGS) $(TEST_FLAGS) ${LIB_FLAGS} ${LD_FLAGS}
@@ -32,11 +35,11 @@ gcov_report: clean test
 	lcov --directory . --capture --branch-coverage --output-file coverage.info
 	genhtml coverage.info --branch-coverage --output-directory coverage_report
 	xdg-open coverage_report/index.html
-	rm -rf *.gcda *.gcno $(OBJECT_FILES)
+	rm -rf  $(OBJECT_FILES)
 	rm -rf coverage.info test_executable
 
 clean:
 	#clear
-	rm -rf *.out $(OBJECT_FILES) *.a
-	rm -rf *.gcda *.gcno
+	rm -rf $(OBJECT_FILES)
+	rm -rf $(GCOV_FILES)
 	rm -rf coverage_report coverage.info

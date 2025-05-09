@@ -7,10 +7,10 @@
 #include "../s21_decimal.h"
 
 // Арифметика
-// Suite *suite_add(void);
+Suite *suite_add(void);
 Suite *suite_div(void);
 Suite *suite_mul(void);
-// Suite *suite_sub(void);
+Suite *suite_sub(void);
 
 // Сравнение
 Suite *suite_is_less(void);
@@ -32,4 +32,4 @@ Suite *suite_negate(void);
 Suite *suite_round(void);
 Suite *suite_truncate(void);
 
-#endif  // S21_DECIMAL_TEST_H
+#endif // S21_DECIMAL_TEST_H
