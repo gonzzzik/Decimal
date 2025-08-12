@@ -29,8 +29,15 @@ Decimal число - это значение с плавающей точкой,
 
 Decimal реализован в виде четырехэлементного массива 32-разрядных целых чисел со знаком (`int bits[4];`):
 ```
-typedef struct s21_decimal {
-    int bits[4];
+typedef union {
+  unsigned int bits[4];
+  struct {
+    unsigned int mantissa[3];
+    unsigned int oversize : 16;
+    unsigned int exp : 8;
+    unsigned int _void : 7;
+    unsigned int sign : 1;
+  } bit;
 } s21_decimal;
 ```
 
